@@ -2,9 +2,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "master"]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -14,12 +14,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Test
-        run: mvn clean install -X -f Bai1/pom.xml
+      - name: Build and Run Explanations
+        run: |
+          mvn package exec:java -Dexec.mainClass="com.auction.Main"
+
+      - name: Upload Build Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Artifacts
+          path: target/*.jar
