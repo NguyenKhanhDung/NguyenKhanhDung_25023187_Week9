@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>Bai1</module>
+        <module>Bai2</module>
+        <module>Bai3</module>
 
     </modules>
 </project>

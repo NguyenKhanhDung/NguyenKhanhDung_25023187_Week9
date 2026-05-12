@@ -1,0 +1,41 @@
+name: CI Demo - Intentional Build Failure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  demonstrate-failure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Inject broken class (simulate developer mistake)
+        run: |
+          mkdir -p src/main/java/bank/service/
+          cat > src/main/java/bank/service/BrokenDeposit.java << 'JAVA'
+          package bank.service;
+          public class BrokenDeposit {
+              public double calculate() {
+                  return "not a number"
+              }
+          }
+          JAVA
+
+      - name: Run tests (EXPECTED TO FAIL)
+        run: mvn test --no-transfer-progress
+
+      - name: Collect surefire reports for debug
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: broken-build-reports
+          path: target/surefire-reports/
+          retention-days: 3
